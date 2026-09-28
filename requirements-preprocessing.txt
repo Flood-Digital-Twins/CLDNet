@@ -1,0 +1,19 @@
+# Regenerating the SynxFlow simulations and the preprocessing notebooks.
+synxflow         # GPU build; see https://github.com/SynxFlow/SynxFlow
+numpy
+pandas
+xarray
+netCDF4
+rasterio
+rioxarray
+geopandas
+shapely
+pyproj
+matplotlib
+# notebooks (DEM, land cover, USGS retrieval)
+py3dep
+pynhd
+pygeohydro
+pysheds
+contextily
+simplekml

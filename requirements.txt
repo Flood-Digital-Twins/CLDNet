@@ -1,0 +1,11 @@
+# Models: CLDNet/LDNet training, inference and evaluation. Python >= 3.11.
+torch>=2.1
+numpy
+matplotlib
+tqdm
+rich
+prefetch_generator
+wandb            # imported by the trainer; logging is off unless --use-wandb
+pandas
+rasterio         # Illinois evaluation figures
+imageio

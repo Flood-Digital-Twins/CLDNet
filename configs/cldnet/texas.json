@@ -1,0 +1,93 @@
+{
+  "format_version": 1,
+  "model": "CLDNet",
+  "dataset": "texas",
+  "scope": "deposited checkpoint inference; original training record unavailable",
+  "checkpoint": {
+    "directory": "checkpoints/cldnet/texas",
+    "epoch": 489,
+    "dyn": "checkpoints/cldnet/texas/dyn_489.ckpt",
+    "rec": "checkpoints/cldnet/texas/rec_489.ckpt",
+    "fourier_B": "checkpoints/cldnet/texas/B_489.ckpt",
+    "optimizer": null,
+    "parameter_count": 849923
+  },
+  "data": {
+    "model_ready_root": "data/postprocessed/texas",
+    "raw_root": "data/texas",
+    "aggregate_mask": "data/postprocessed/texas/aggregate_mask.npy",
+    "flow_channels": [
+      "h",
+      "hu",
+      "hv"
+    ],
+    "stored_flow_dtype": "float16",
+    "timesteps_per_trajectory": 48,
+    "rain_features": 1,
+    "coordinate_features": 2,
+    "static_feature_channels": 2,
+    "flow_normalization": false,
+    "rain_normalization": true,
+    "rain_mean": "data/postprocessed/texas/rain_mean.npy",
+    "rain_std": "data/postprocessed/texas/rain_std.npy"
+  },
+  "architecture": {
+    "script": "code/ldnet/efficient_fourier_ldnet.py",
+    "num_latent_states": 30,
+    "dim_u": 1,
+    "dim_x": 4,
+    "dim_y": 3,
+    "fourier_mapping_size": 10,
+    "NN_dyn_depth": 8,
+    "NN_dyn_width": 50,
+    "NN_rec_depth": 10,
+    "NN_rec_width": 300,
+    "activation": "relu",
+    "kernel_initializer": "Glorot normal"
+  },
+  "inference": {
+    "working_directory": ".",
+    "reduced_test_command": [
+      "python",
+      "code/ldnet/ldnet_chicago_efficient_test.py",
+      "--model-path",
+      "checkpoints/cldnet/texas",
+      "--data-root",
+      "data/postprocessed/texas",
+      "--aggregate-mask-path",
+      "data/postprocessed/texas/aggregate_mask.npy",
+      "--checkpoint-epoch",
+      "489",
+      "--traj-id",
+      "108",
+      "--num-latent-states",
+      "30",
+      "--fourier-mapping-size",
+      "10",
+      "--all-vars",
+      "--output-dir",
+      "outputs/texas_cldnet_traj108",
+      "--use-static-features",
+      "--normalize-rain"
+    ],
+    "full_grid_test_command": null,
+    "full_grid_note": "The all-indices script expects Illinois event_<id> raw folders; use the reduced test script for Texas."
+  },
+  "training": {
+    "script": "code/ldnet/ldnet_chicago_efficient.py",
+    "original_command": null,
+    "random_seed": null,
+    "seed_note": "The original seed is unknown; the released trainer does not explicitly set one.",
+    "train_validation_split": null,
+    "scheduler": null,
+    "sample_indices": null,
+    "num_epochs_requested": null,
+    "optimizer_state_at_checkpoint": {
+      "name": "Adam",
+      "initial_learning_rate": 0.001,
+      "saved_learning_rate": 0.0009980273207905246,
+      "weight_decay": 0.0,
+      "step_count": 44590
+    }
+  }
+}

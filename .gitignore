@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+outputs/
+log/
+wandb/
+# simulation outputs (regenerated locally, not versioned)
+data/sims_30/
+data/postprocessed/
+data/static/DEM.npy
+data/static/landcover_5070_processed.tif
