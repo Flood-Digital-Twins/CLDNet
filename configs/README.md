@@ -1,12 +1,14 @@
 # LDNet and CLDNet configurations
 
-`cldnet/{illinois,texas}.json` describe the released checkpoints. Run their `inference` command arrays from the repository root. All paths
+`ldnet/{illinois,texas}.json` and `cldnet/{illinois,texas}.json` describe the released LDNet and CLDNet
+checkpoints; `fno/run_config.json` is the Texas FNO run (see `code/fno/README.md`). Run the LDNet/CLDNet
+`inference` command arrays from the repository root. All paths
 are repository relative. The Illinois full-grid commands use `data/sims_30`.
 
 The architecture and inference flags were checked against the saved `dyn`, `rec`, and
 Fourier `B` states. Illinois epoch 539 uses three output channels (`h`, `hu`, `hv`),
-200 latent states, and Fourier size 32. Texas epoch 489 uses 30 latent states and
-Fourier size 10. CLDNet appends static inputs; Texas uses rain normalization.
+200 latent states, and Fourier size 32. Texas (CLDNet epoch 489, LDNet epoch 549) uses
+30 latent states and Fourier size 10. CLDNet appends static inputs; Texas uses rain normalization.
 
 The original training commands, seeds, validation selection, and schedulers are
 unknown. A supplied H200 command was a template, not the command that produced the

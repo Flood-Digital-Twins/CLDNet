@@ -1,0 +1,4 @@
+# Run artifacts written by the training and inference scripts.
+outputs/
+__pycache__/
+*.pyc

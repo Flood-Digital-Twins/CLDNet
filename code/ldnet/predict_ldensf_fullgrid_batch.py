@@ -29,13 +29,13 @@ from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_PYTHON_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MODEL_PATH = Path("checkpoints/cldnet")
+DEFAULT_MODEL_PATH = Path("checkpoints/cldnet/illinois")
 DEFAULT_DATA_ROOT = Path("data/postprocessed/illinois")
 DEFAULT_DATASET_PATH = Path("data/postprocessed/illinois/observation_ldensf_dataset_usgs_validation.pth")
 DEFAULT_ENCODER_CHECKPOINT = Path("checkpoints/ldensf_lstm_usgs_validation/lstm_ldensf_usgs_validation.ckpt")
 DEFAULT_CHECKPOINT_EPOCH = 539
-DEFAULT_TRAJ_IDS = [116, 117, 118, 119, 120]
-DEFAULT_ANIMATE_TRAJ_ID = 118
+DEFAULT_TRAJ_IDS = [107, 108, 109]
+DEFAULT_ANIMATE_TRAJ_ID = 108
 
 sys.path.append(str(REPO_ROOT))
 
@@ -193,13 +193,13 @@ def create_options() -> argparse.Namespace:
     static_group = parser.add_mutually_exclusive_group()
     static_group.add_argument("--use-static-features", dest="use_static_features", action="store_true")
     static_group.add_argument("--no-static-features", dest="use_static_features", action="store_false")
-    parser.set_defaults(use_static_features=None)
+    parser.set_defaults(use_static_features=True)
     return parser.parse_args()
 
 
 def _resolve_output_dir(opt: argparse.Namespace) -> Path:
     if opt.output_dir is None:
-        return _resolve_path(opt.base_path, opt.model_path) / "fullgrid_ldensf_usgs_validation_traj116_120"
+        return opt.base_path / "outputs/fullgrid_ldensf_usgs_validation_direct_traj107_109"
     if opt.output_dir.is_absolute():
         return opt.output_dir
     return opt.base_path / opt.output_dir

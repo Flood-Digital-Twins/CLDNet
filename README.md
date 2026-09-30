@@ -4,7 +4,7 @@ Code, input data and trained models for
 
 > P. Si, Y. Qiu, O. Sallam, J. Feinstein, Z. He, E. Yan, P. Chen (2026). *Toward AI-driven digital twins for
 > metropolitan floods: A conditional latent dynamics network surrogate of the shallow water equations.*
-> Journal of Hydrology, 136461. https://doi.org/10.1016/j.jhydrol.2026.136461 ([arXiv:2605.13761](https://arxiv.org/abs/2605.13761))
+> Journal of Hydrology 680, 136461. https://doi.org/10.1016/j.jhydrol.2026.136461 ([arXiv:2605.13761](https://arxiv.org/abs/2605.13761))
 
 CLDNet is a fast surrogate of the 2D shallow water equations. A low-dimensional latent state evolves in time,
 driven by rainfall, and a coordinate-based decoder conditioned on terrain (elevation, slope, Manning roughness) reconstructs
@@ -29,8 +29,9 @@ into water depth h and unit discharges hu, hv.*
 | Folder | Contents |
 |---|---|
 | `code/ldnet/` | LDNet/CLDNet model, training, inference and evaluation; LD-EnSF data assimilation |
+| `code/fno/` | FNO baseline for the Texas benchmark: training and autoregressive inference |
 | `configs/` | architecture, checkpoint and inference settings for each model and dataset |
-| `checkpoints/` | trained CLDNet (Des Plaines and Texas) |
+| `checkpoints/` | trained CLDNet and LDNet (Des Plaines and Texas) and FNO (Texas) |
 | `splits/illinois_split.json` | 90 training storms, 3 held-out test storms, and the separately held-out 2013 event |
 | `data/static/` | Des Plaines DEM (EPSG:5070), NLCD land cover, gauge positions, shared initial condition |
 | `data/forcings/` | Stage IV hourly rainfall for all 94 Des Plaines storms (`.nc` simulator input, `rain_source.npy` model input) |
@@ -61,6 +62,7 @@ pip install -r requirements.txt
 ```bash
 python scripts/predict_cldnet.py --storm 107                      # held-out test storm
 python scripts/predict_cldnet.py --storm 2013-04-17_2013-04-21   # the April 2013 flood-of-record
+python scripts/predict_cldnet.py --storm 107 --model ldnet        # the LDNet baseline (no terrain conditioning)
 ```
 
 This writes a peak-depth map and `outputs/<model>_<storm>.npz` (peak depth per cell; add `--save-fields` for all 96 hourly
@@ -92,6 +94,7 @@ torchrun --nproc_per_node=8 code/ldnet/ldnet_chicago_efficient.py --ddp --num-tr
 
 **Reproduce the paper's numbers** from the checkpoints once model-ready arrays exist: `scripts/rescore_checkpoints.py`
 (Illinois tables), `scripts/rescore_texas.py` (Texas), `scripts/score_train_vs_heldout.py` and `scripts/plot_fig7b.py` (Fig. 7b).
+The Texas FNO baseline has its own environment and instructions in `code/fno/README.md` (neuraloperator 1.0.2).
 
 ## License
 
@@ -107,6 +110,7 @@ NWIS gauge records.
              surrogate of the shallow water equations},
   author  = {Si, Phillip and Qiu, Yuan and Sallam, Omar and Feinstein, Jeremy and He, Ziang and Yan, Eugene and Chen, Peng},
   journal = {Journal of Hydrology},
+  volume  = {680},
   pages   = {136461},
   year    = {2026},
   doi     = {10.1016/j.jhydrol.2026.136461}

@@ -1,7 +1,7 @@
-"""Score the released Texas CLDNet (epoch 489) on every model-ready Texas storm.
+"""Score the released Texas CLDNet (epoch 489) and LDNet (epoch 549) on every model-ready Texas storm.
 
 Writes per-storm sufficient statistics (se, tt, t, n) so metrics can be pooled or averaged afterwards.
-Usage: python release/rescore_texas.py   (GPU; about 10 min)
+Usage: python scripts/rescore_texas.py   (GPU; about 10 min)
 """
 import json
 import sys
@@ -17,10 +17,11 @@ from efficient_fourier_ldnet import EfficientFourierLDNN  # noqa: E402
 
 DATA = ROOT / "data/postprocessed/texas"
 OUT = Path(__file__).resolve().parent / "rescore_texas_latest.json"
+EPOCH = {"cldnet": 489, "ldnet": 549}  # the epochs the paper reports
 
 
 def opts(model, static):
-    argv = ["x", "--model-path", f"checkpoints/{model}/texas", "--checkpoint-epoch", "489", "--all-vars",
+    argv = ["x", "--model-path", f"checkpoints/{model}/texas", "--checkpoint-epoch", str(EPOCH[model]), "--all-vars",
             "--data-root", "data/postprocessed/texas", "--normalize-rain", "--fourier-mapping-size", "10",
             "--num-latent-states", "30", "--device", "cuda:0", "--chunk-size", "300000"]
     if static:

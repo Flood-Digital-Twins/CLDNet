@@ -1,7 +1,7 @@
 """Re-score the deposited Illinois LDNet/CLDNet epoch-539 checkpoints on the reduced (aggregate-mask) data.
 
 Reuses the release's own loaders and model so the numbers are what a stranger would get.
-Usage: python release/rescore_checkpoints.py [traj ids...]   (MODELS=cldnet,ldnet; default ids 107 108 109 120)
+Usage: python scripts/rescore_checkpoints.py [traj ids...]   (MODELS=cldnet,ldnet; default ids 107 108 109 120)
 """
 import json
 import os

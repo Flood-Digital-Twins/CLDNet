@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Run the released Des Plaines (Illinois) CLDNet on any of the 94 storms, from the repository inputs alone.
+"""Run the released Des Plaines (Illinois) CLDNet, or the LDNet baseline, on any of the 94 storms, from the
+repository inputs alone.
 
 Predicts water depth h and unit discharges hu, hv for 96 hours on the 1,408,587 evaluation cells, using the storm's
 Stage IV forcing (data/forcings) and the query grid (data/illinois_grid). No simulation data are needed.
 
     python scripts/predict_cldnet.py --storm 107                      # peak-depth map + summary
     python scripts/predict_cldnet.py --storm 2013-04-17_2013-04-21 --save-fields
+    python scripts/predict_cldnet.py --storm 107 --model ldnet                        # unconditioned baseline
     python scripts/predict_cldnet.py --storm 107 --truth path/to/flow_variables_traj107.npy   # score a regenerated run
 
 Outputs (in --out-dir): <model>_<storm>_peak_depth.png, <model>_<storm>.npz with the peak depth per cell and, with
@@ -43,7 +45,7 @@ def build_model(name, device):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--storm", required=True, help="event id (e.g. 107) or 2013-04-17_2013-04-21")
-    ap.add_argument("--model", choices=("cldnet",), default="cldnet")
+    ap.add_argument("--model", choices=("cldnet", "ldnet"), default="cldnet")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--chunk-size", type=int, default=200_000, help="query points decoded at once (lower if OOM)")
     ap.add_argument("--out-dir", default="outputs")

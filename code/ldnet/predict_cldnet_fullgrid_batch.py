@@ -38,11 +38,11 @@ from ldnet_chicago_efficient_test import (
 REPO_ROOT = Path(__file__).resolve().parent
 DEFAULT_PYTHON_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT_ROOT = Path("data/sims_30")
-DEFAULT_MODEL_PATH = Path("checkpoints/cldnet")
+DEFAULT_MODEL_PATH = Path("checkpoints/cldnet/illinois")
 DEFAULT_DATA_ROOT = Path("data/postprocessed/illinois")
 DEFAULT_CHECKPOINT_EPOCH = 539
-DEFAULT_TRAJ_IDS = [116, 117, 118, 119, 120]
-DEFAULT_ANIMATE_TRAJ_ID = 118
+DEFAULT_TRAJ_IDS = [107, 108, 109]
+DEFAULT_ANIMATE_TRAJ_ID = 108
 
 
 def create_options() -> argparse.Namespace:
@@ -96,7 +96,7 @@ def _build_model(opt: argparse.Namespace, dim_y: int, dim_u: int, dim_x: int) ->
 
 def _resolve_output_dir(opt: argparse.Namespace) -> Path:
     if opt.output_dir is None:
-        return _resolve_path(opt.base_path, opt.model_path) / "fullgrid_predictions_traj116_120"
+        return opt.base_path / "outputs/fullgrid_predictions_traj107_109"
     if opt.output_dir.is_absolute():
         return opt.output_dir
     return opt.base_path / opt.output_dir

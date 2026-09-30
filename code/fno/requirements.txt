@@ -1,0 +1,9 @@
+# Versions used for the deposited FNO checkpoint (Python 3.13.5, CUDA 12.6).
+# Python >= 3.11 is required: the scripts use PEP 646 star-unpacking in subscripts
+# (tensor[idx, *suffix]) and PEP 604 unions.
+torch==2.7.1
+neuraloperator==1.0.2
+numpy==2.3.1
+matplotlib==3.10.3
+imageio==2.37.0
+tqdm==4.67.1

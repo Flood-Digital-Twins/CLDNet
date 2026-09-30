@@ -1,7 +1,8 @@
 # Texas 48-hour storm benchmark
 
 Inputs of the synthetic Texas benchmark: shallow-water simulations over a fixed 500 x 500 domain,
-used to train and evaluate the Texas CLDNet (`code/ldnet/`, `configs/cldnet/texas.json`).
+used to train and evaluate the Texas CLDNet and LDNet (`code/ldnet/`, `configs/{cldnet,ldnet}/texas.json`)
+and the FNO baseline (`code/fno/`).
 
 > **This is not the Des Plaines / Illinois dataset.** The main release described in the
 > top-level `README.md` — 94 Illinois storms, the April 2013 flood-of-record,
@@ -12,7 +13,7 @@ used to train and evaluate the Texas CLDNet (`code/ldnet/`, `configs/cldnet/texa
 
 **In this repository: inputs only.** The DEM (in `sample_00001`), the 120 hyetographs
 (`rain_source.npy`), the per-storm metadata (`readme.txt`), and the rainfall mean/std used by the Texas
-CLDNet (`rain_mean.npy`, `rain_std.npy`). The `flow_variables.npy` simulation outputs (65 GB) are not
+LDNet and CLDNet (`rain_mean.npy`, `rain_std.npy`). The `flow_variables.npy` simulation outputs (65 GB) are not
 included.
 
 | | Train | Test |
@@ -25,7 +26,7 @@ data/texas/train_dataset/sample_00001/DEM.npy             (3, 500, 500)       fl
                                      /readme.txt          per-storm simulation metadata (JSON)
                          /sample_00002/...
 data/texas/test_dataset/sample_00101/...
-data/texas/rain_mean.npy, rain_std.npy                    rainfall standardization (Texas CLDNet)
+data/texas/rain_mean.npy, rain_std.npy                    rainfall standardization (Texas LDNet/CLDNet)
 data/texas/SHA256SUMS                                     checksums
 (not included: flow_variables.npy, (193, 3, 500, 500) float32 per storm, the 15-min simulation output)
 ```
@@ -105,7 +106,7 @@ fixed, out-of-range total depth, not to new storms drawn from the training distr
 
 ## Model-ready arrays
 
-The Texas CLDNet reads `data/postprocessed/texas/` (regenerated, not included): for storm `k`,
+The Texas LDNet and CLDNet read `data/postprocessed/texas/` (regenerated, not included): for storm `k`,
 `flow_variables_traj<k>.npy` holds the 48 hourly states (15-min indices 4, 8, ..., 192 of `flow_variables.npy`)
 on all 250,000 cells, shape `(1, 48, 250000, 3)`, float16, and `rain_source_traj<k>.npy` holds rows 0-47 of
 column 1 of `rain_source.npy` (m/s), shape `(1, 48, 1)`. Rainfall is standardized with `rain_mean.npy` and
