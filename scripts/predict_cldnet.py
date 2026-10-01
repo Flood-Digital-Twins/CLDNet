@@ -12,6 +12,10 @@ Stage IV forcing (data/forcings) and the query grid (data/illinois_grid). No sim
 
 Outputs (in --out-dir): <model>_<storm>_peak_depth.png, <model>_<storm>.npz with the peak depth per cell and, with
 --save-fields, the full (96, cells, 3) float16 prediction (~0.8 GB).
+
+The released CLDNet is fed `static_features_as_trained`, the terrain features it was trained on, whose Manning
+channel is mis-registered (see the README, "Correction: Manning channel"). Feeding it the corrected
+`static_features` raises its error (held-out storms: 21.9 % -> 29.9 %).
 """
 import argparse
 import json
@@ -57,7 +61,8 @@ def main():
     mask = grid["aggregate_mask"]
     rain = np.load(ROOT / "data" / "forcings" / f"event_{args.storm}" / "rain_source.npy")[:96]  # (96, 507) mm/h
     model, dim_x = build_model(args.model, args.device)
-    feats = np.concatenate([grid["coords"], grid["static_features"]], axis=1)[:, :dim_x].astype(np.float32)
+    # the released checkpoints were trained on the as-trained terrain features, not on the corrected `static_features`
+    feats = np.concatenate([grid["coords"], grid["static_features_as_trained"]], axis=1)[:, :dim_x].astype(np.float32)
 
     x = torch.from_numpy(feats).to(args.device)
     data = {"u": torch.from_numpy(rain.astype(np.float32))[None].to(args.device),

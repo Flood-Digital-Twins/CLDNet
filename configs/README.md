@@ -11,6 +11,11 @@ Fourier `B` states. Illinois epoch 539 uses three output channels (`h`, `hu`, `h
 200 latent states, and Fourier size 32. Texas (CLDNet epoch 489, LDNet epoch 549) uses
 30 latent states and Fourier size 10. CLDNet appends static inputs; Texas uses rain normalization.
 
+The Illinois CLDNet (epoch 539) was trained on terrain features whose Manning channel is mis-registered (README,
+"Correction: Manning channel"). Its `full_grid_test_command` therefore passes `--legacy-manning-order`, and its
+reduced-data commands need `static_features_traj<k>.npy` built the same way (`static_features_as_trained` in
+`data/illinois_grid/grid.npz`). A new model should be trained on the corrected features.
+
 The original training commands, seeds, validation selection, and schedulers are
 unknown. A supplied H200 command was a template, not the command that produced the
 Illinois epoch 539 weights. Each Illinois JSON therefore has a separate

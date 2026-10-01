@@ -14,7 +14,25 @@ Usage:
 """
 
 
-def _load_static_fields(dataset_directory: Path) -> tuple[np.ndarray, np.ndarray, dict]:
+def _element_values_to_grid(values: np.ndarray, dem_valid: np.ndarray, legacy_order: bool = False) -> np.ndarray:
+    """Place a per-element field of the simulator (input/field/*.dat) on the DEM grid.
+
+    SynxFlow/HiPIMS number the valid cells row by row starting from the SOUTHERN (last) row of the raster,
+    west to east within a row; z.dat read in that order reproduces DEM.npy to 5e-4 m.
+    ``legacy_order=True`` instead fills the grid from the northern row downward. That is how the Des Plaines
+    static features behind the released epoch-539 checkpoints were built; it mis-registers the Manning channel
+    (wrong at 6.7 % of the evaluation cells) and is kept only to reproduce those checkpoints' inputs.
+    """
+    full = np.full(dem_valid.shape, np.nan, dtype=np.float32)
+    if legacy_order:
+        full.ravel()[dem_valid.ravel()] = values
+    else:
+        south_up = full[::-1]  # a view of `full` whose first row is the southern row
+        south_up[dem_valid[::-1]] = values
+    return full
+
+
+def _load_static_fields(dataset_directory: Path, legacy_manning_order: bool = False) -> tuple[np.ndarray, np.ndarray, dict]:
     dem_path = dataset_directory / "DEM.npy"
     manning_path = dataset_directory / "input/field/manning.dat"
 
@@ -75,8 +93,7 @@ def _load_static_fields(dataset_directory: Path) -> tuple[np.ndarray, np.ndarray
                 f"manning.dat count {manning_vals.size} does not match DEM valid count {int(dem_valid.sum())}"
             )
 
-        manning_full = np.full(elev.shape, np.nan, dtype=np.float32)
-        manning_full.ravel()[dem_valid.ravel()] = manning_vals
+        manning_full = _element_values_to_grid(manning_vals, dem_valid, legacy_manning_order)
         scaling["manning_scale"] = 100.0
         scaling["has_manning"] = True
         static_fields.append(manning_full * scaling["manning_scale"])
@@ -126,6 +143,14 @@ def main() -> None:
         type=Path,
         default=Path("data/postprocessed/illinois/aggregate_mask.npy"),
     )
+    parser.add_argument(
+        "--legacy-manning-order",
+        action="store_true",
+        default=False,
+        help="Map manning.dat as when the released Des Plaines epoch-539 checkpoints were trained (pasted from the "
+        "northern row down, which mis-registers the channel). Needed to reproduce the paper with those "
+        "checkpoints; leave off for new datasets and new models.",
+    )
     args = parser.parse_args()
 
     output_dir = _resolve_path(args.base_path, args.output_dir)
@@ -151,7 +176,7 @@ def main() -> None:
             print(f"Skipping {dataset_directory} (missing DEM.npy or manning.dat)")
             continue
 
-        static, _, scaling = _load_static_fields(dataset_directory)
+        static, _, scaling = _load_static_fields(dataset_directory, legacy_manning_order=args.legacy_manning_order)
         h_dim, w_dim = static.shape[:2]
         if expected_static_channels is None:
             expected_static_channels = int(static.shape[-1])

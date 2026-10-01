@@ -14,3 +14,9 @@ The **Manning field itself is not a deposited raster.** It is derived at run tim
 
 The 20-class NLCD coefficient table in `run_hipims_event.py` was **never applied**: every
 deposited run used `variable_manning = 0`.
+
+**Cell order of `manning.dat`.** SynxFlow writes the field to `input/field/manning.dat` with one value per valid
+cell, numbered row by row from the *southern* row of the raster upward (the same order as `z.dat`). The dataset
+scripts in `code/ldnet/` originally read it as if it started at the northern row, which mis-registered the Manning
+channel of the Des Plaines terrain features; they now use the simulator's order (README, "Correction: Manning
+channel").

@@ -29,7 +29,8 @@
     "flow_normalization": false,
     "rain_normalization": false,
     "rain_mean": null,
-    "rain_std": null
+    "rain_std": null,
+    "static_feature_note": "This checkpoint was trained on terrain features whose Manning channel is mis-registered: use static_features_as_trained of data/illinois_grid/grid.npz, or model-ready static_features_traj<k>.npy built with create_dataset*.py --legacy-manning-order. The corrected channel is static_features."
   },
   "architecture": {
     "script": "code/ldnet/efficient_fourier_ldnet.py",
@@ -92,9 +93,10 @@
       "--skip-plots",
       "--output-dir",
       "outputs/illinois_cldnet_fullgrid_traj109",
-      "--use-static-features"
+      "--use-static-features",
+      "--legacy-manning-order"
     ],
-    "full_grid_note": null
+    "full_grid_note": "--legacy-manning-order maps manning.dat onto the grid as when this checkpoint was trained (mis-registered Manning channel; see the README, 'Correction: Manning channel'). Without it the script builds the correct channel, on which this checkpoint was not trained."
   },
   "training": {
     "script": "code/ldnet/ldnet_chicago_efficient.py",

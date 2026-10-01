@@ -81,8 +81,9 @@ python preprocessing/simulation/collect_training_data.py --event_idx 107    # ->
 per storm `k`: `flow_variables_traj<k>.npy` is the full-grid `flow_variables.npy` at hours 1–96 restricted to the
 `aggregate_mask` cells of `data/illinois_grid/grid.npz` (row-major order), shape `(1, 96, 1408587, 3)`, float16;
 `rain_source_traj<k>.npy` is rows 0–95 of `data/forcings/event_<k>/rain_source.npy`, shape `(1, 96, 507)`;
-`coords_traj<k>.npy` and `static_features_traj<k>.npy` are the grid's `coords` and `static_features`. The 2013 event
-is `k = 120`.
+`coords_traj<k>.npy` is the grid's `coords`, and `static_features_traj<k>.npy` its `static_features_as_trained` when the
+released checkpoints are scored, or its `static_features` when a new model is trained (see the correction below). The
+2013 event is `k = 120`.
 
 **Train** (settings in `configs/*/illinois.json`; Slurm example in `configs/illinois_h200.sbatch`):
 
@@ -95,8 +96,32 @@ torchrun --nproc_per_node=8 code/ldnet/ldnet_chicago_efficient.py --ddp --num-tr
 
 **Reproduce the paper's numbers** from the checkpoints once model-ready arrays exist: `scripts/rescore_checkpoints.py`
 (Illinois tables), `scripts/rescore_texas.py` (Texas), `scripts/score_train_vs_heldout.py` and `scripts/plot_fig7b.py` (Fig. 7b).
+For the Des Plaines CLDNet the static features must be the as-trained ones (`static_features_as_trained`, or
+`code/ldnet/create_dataset*.py --legacy-manning-order`).
 The Texas baselines have their own instructions: `code/fno/README.md` (FNO; its own environment, neuraloperator 1.0.2)
 and `code/vae_convlstm/README.md` (VAE–ConvLSTM; scored with `scripts/score_vae_convlstm.py`).
+
+## Correction: Manning channel of the Des Plaines terrain features (October 2026)
+
+In the Des Plaines terrain features on which the released CLDNet was trained, the Manning-roughness channel is
+mis-registered. The simulator's `manning.dat` numbers the cells from the southern row of the raster upward; the
+dataset scripts wrote those values into the grid from the northern row downward. The channel therefore differs from
+the roughness the simulator used at 93,816 of the 1,408,587 evaluation cells (6.7 %) and marks 1.8 % of the cells as
+open water where 5.0 % are. Elevation and slope are correct. The simulations are not affected (SynxFlow read the
+correct roughness), and neither is the Texas benchmark, whose Manning coefficient is uniform.
+
+- **The paper's numbers** are those of the model trained on that channel. The released checkpoint reproduces them
+  with `static_features_as_trained` in `data/illinois_grid/grid.npz`, which `scripts/predict_cldnet.py` uses. The
+  released Des Plaines CLDNet was therefore conditioned on elevation and slope, but not on the local roughness.
+- **Do not feed the released checkpoint the corrected channel**: it depends on the channel as trained. With the
+  corrected one its relative RMSE rises from 21.9 % to 29.9 % on the held-out storms and from 17.7 % to 27.3 % on the
+  2013 event.
+- **Corrected data**: `static_features` in `grid.npz` now holds the right channel (Manning 0.02 exactly where
+  `landcover_5070_processed.tif` is water), for training new models.
+- **Corrected code**: `code/ldnet/create_dataset.py`, `create_dataset_static_from_mask.py`,
+  `create_dataset_mask_only.py` and `ldnet_chicago_efficient_test_all_indices.py` now map `manning.dat` in the
+  simulator's cell order. `--legacy-manning-order` rebuilds the as-trained inputs, and
+  `configs/cldnet/illinois.json` passes it for the released checkpoint.
 
 ## License
 
