@@ -2,7 +2,7 @@
 
 Inputs of the synthetic Texas benchmark: shallow-water simulations over a fixed 500 x 500 domain,
 used to train and evaluate the Texas CLDNet and LDNet (`code/ldnet/`, `configs/{cldnet,ldnet}/texas.json`)
-and the FNO baseline (`code/fno/`).
+and the FNO and VAE–ConvLSTM baselines (`code/fno/`, `code/vae_convlstm/`).
 
 > **This is not the Des Plaines / Illinois dataset.** The main release described in the
 > top-level `README.md` — 94 Illinois storms, the April 2013 flood-of-record,
@@ -13,8 +13,9 @@ and the FNO baseline (`code/fno/`).
 
 **In this repository: inputs only.** The DEM (in `sample_00001`), the 120 hyetographs
 (`rain_source.npy`), the per-storm metadata (`readme.txt`), and the rainfall mean/std used by the Texas
-LDNet and CLDNet (`rain_mean.npy`, `rain_std.npy`). The `flow_variables.npy` simulation outputs (65 GB) are not
-included.
+LDNet and CLDNet (`rain_mean.npy`, `rain_std.npy`). `vae_and_latents_texas/` holds the normalized rain arrays of the
+VAE–ConvLSTM baseline, which fix the row order of the arrays it regenerates. The `flow_variables.npy` simulation
+outputs (65 GB) are not included.
 
 | | Train | Test |
 |---|---|---|
@@ -27,6 +28,7 @@ data/texas/train_dataset/sample_00001/DEM.npy             (3, 500, 500)       fl
                          /sample_00002/...
 data/texas/test_dataset/sample_00101/...
 data/texas/rain_mean.npy, rain_std.npy                    rainfall standardization (Texas LDNet/CLDNet)
+data/texas/vae_and_latents_texas/rain_{train,test}.npy    (100|20, 192, 1)    float32   (VAE-ConvLSTM, normalized)
 data/texas/SHA256SUMS                                     checksums
 (not included: flow_variables.npy, (193, 3, 500, 500) float32 per storm, the 15-min simulation output)
 ```

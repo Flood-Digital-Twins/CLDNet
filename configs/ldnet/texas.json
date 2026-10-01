@@ -9,7 +9,7 @@
     "dyn": "checkpoints/ldnet/texas/dyn_549.ckpt",
     "rec": "checkpoints/ldnet/texas/rec_549.ckpt",
     "fourier_B": "checkpoints/ldnet/texas/B_549.ckpt",
-    "optimizer": "checkpoints/ldnet/texas/optimizer_549.ckpt",
+    "optimizer": null,
     "parameter_count": 849903
   },
   "data": {

@@ -9,7 +9,7 @@
     "dyn": "checkpoints/ldnet/illinois/dyn_539.ckpt",
     "rec": "checkpoints/ldnet/illinois/rec_539.ckpt",
     "fourier_B": "checkpoints/ldnet/illinois/B_539.ckpt",
-    "optimizer": "checkpoints/ldnet/illinois/optimizer_539.ckpt",
+    "optimizer": null,
     "parameter_count": 956617
   },
   "data": {

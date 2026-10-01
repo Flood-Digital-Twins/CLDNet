@@ -1,0 +1,58 @@
+{
+  "format_version": 1,
+  "model": "VAE-ConvLSTM",
+  "dataset": "texas",
+  "scope": "deposited checkpoints; settings read from the checkpoints and code/vae_convlstm, not from an original run log",
+  "checkpoint": {
+    "directory": "checkpoints/vae_convlstm",
+    "vae": "checkpoints/vae_convlstm/checkpoint_vae.pth",
+    "vae_epoch": 1900,
+    "convlstm": "checkpoints/vae_convlstm/checkpoint_convlstm.pth",
+    "convlstm_epoch": 300,
+    "flow_normalization": "checkpoints/vae_convlstm/mean_std.npz",
+    "rain_normalization": "checkpoints/vae_convlstm/mean_std_rain_source.npz",
+    "parameter_count": 14557515,
+    "parameter_count_note": "VAE_LSTM as defined in code/vae_convlstm/vae_texas.py (encoder 6,077,488; decoder 8,466,115; quant convs 672; built-in dynamics 13,240). The separately fine-tuned residual ConvLSTM used for rollout has 110,560 more."
+  },
+  "data": {
+    "raw_root": "data/texas",
+    "train_samples": [1, 100],
+    "test_samples": [101, 120],
+    "flow_channels": ["h", "hu", "hv"],
+    "frames_per_trajectory": 192,
+    "frame_step_minutes": 15,
+    "burn_in_frames_dropped": 1,
+    "grid": [500, 500],
+    "flow_normalization": true,
+    "rain_normalization": true,
+    "arrays": "data/texas/vae_and_latents_texas (rain_{train,test}.npy fix the row order; state_* and latent_* are rebuilt by generate_states.py and generate_latents.py)"
+  },
+  "architecture": {
+    "vae_script": "code/vae_convlstm/vae_texas.py",
+    "vae_class": "VAE_LSTM",
+    "vae_arguments": {"resolution": 256, "in_channel": 3, "ch_mult": [1, 4, 16], "num_res_blocks": 3, "hidden_dim": 16, "embed_dim": 8, "latent_dim": 256},
+    "latent_shape": [8, 25, 25],
+    "convlstm_script": "code/vae_convlstm/ldm_ae/convlstm.py",
+    "convlstm_arguments": {"input_dim": 9, "hidden_dim": [16, 16, 8], "kernel_size": [5, 5], "num_layers": 3},
+    "convlstm_role": "predicts the latent increment z[t+1] - z[t] from (z[t], rainfall[t])"
+  },
+  "inference": {
+    "working_directory": ".",
+    "score_command": ["python", "scripts/score_vae_convlstm.py"],
+    "smoke_test_command": ["python", "code/vae_convlstm/smoke_test.py", "--sample-id", "101", "--start", "64", "--steps", "16"],
+    "protocol": "encode the first saved frame, roll the latent forward 191 steps with the residual ConvLSTM, decode all 192 frames; rRMSE and RMSE averaged over storms 101-120, R2 pooled",
+    "verified_2026_09_30": {"aggregate": {"rRMSE_pct": 23.41, "RMSE": 0.08374, "R2": 0.92107}, "h": {"rRMSE_pct": 18.74, "RMSE": 0.06917, "R2": 0.95307}}
+  },
+  "training": {
+    "vae_script": "code/vae_convlstm/vae_texas.py",
+    "vae_optimizer_state_at_checkpoint": {"name": "SOAP", "learning_rate": 0.003, "betas": [0.95, 0.95], "weight_decay": 0.01, "precondition_frequency": 10},
+    "vae_scheduler_note": "StepLR(step_size=100, gamma=0.1) is constructed but never stepped (last_epoch 0), so the learning rate stayed at 0.003.",
+    "vae_epochs_note": "The checkpoint is at epoch 1900 with 1900 recorded losses; the script's loop runs to 2000.",
+    "convlstm_script": "code/vae_convlstm/vae_texas_residual.py",
+    "convlstm_optimizer_state_at_checkpoint": {"name": "SOAP", "learning_rate": 0.0001, "betas": [0.95, 0.95], "weight_decay": 0.01, "precondition_frequency": 10},
+    "convlstm_teacher_forcing": "probability max(0, 1 - epoch/200) per step, so epochs 200-300 are fully autoregressive",
+    "batch_size": 1,
+    "random_seed": 42,
+    "original_command": null
+  }
+}

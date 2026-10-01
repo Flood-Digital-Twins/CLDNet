@@ -9,3 +9,5 @@ wandb            # imported by the trainer; logging is off unless --use-wandb
 pandas
 rasterio         # Illinois evaluation figures
 imageio
+einops           # VAE-ConvLSTM baseline
+scikit-learn     # VAE-ConvLSTM baseline

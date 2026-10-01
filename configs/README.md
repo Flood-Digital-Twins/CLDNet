@@ -1,7 +1,8 @@
 # LDNet and CLDNet configurations
 
 `ldnet/{illinois,texas}.json` and `cldnet/{illinois,texas}.json` describe the released LDNet and CLDNet
-checkpoints; `fno/run_config.json` is the Texas FNO run (see `code/fno/README.md`). Run the LDNet/CLDNet
+checkpoints; `fno/run_config.json` is the Texas FNO run (see `code/fno/README.md`) and `vae_convlstm/texas.json`
+the Texas VAE–ConvLSTM (see `code/vae_convlstm/README.md`). Run the LDNet/CLDNet
 `inference` command arrays from the repository root. All paths
 are repository relative. The Illinois full-grid commands use `data/sims_30`.
 

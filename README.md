@@ -30,8 +30,9 @@ into water depth h and unit discharges hu, hv.*
 |---|---|
 | `code/ldnet/` | LDNet/CLDNet model, training, inference and evaluation; LD-EnSF data assimilation |
 | `code/fno/` | FNO baseline for the Texas benchmark: training and autoregressive inference |
+| `code/vae_convlstm/` | VAE–ConvLSTM baseline for the Texas benchmark: training, latent generation and inference |
 | `configs/` | architecture, checkpoint and inference settings for each model and dataset |
-| `checkpoints/` | trained CLDNet and LDNet (Des Plaines and Texas) and FNO (Texas) |
+| `checkpoints/` | trained CLDNet and LDNet (Des Plaines and Texas), FNO and VAE–ConvLSTM (Texas) |
 | `splits/illinois_split.json` | 90 training storms, 3 held-out test storms, and the separately held-out 2013 event |
 | `data/static/` | Des Plaines DEM (EPSG:5070), NLCD land cover, gauge positions, shared initial condition |
 | `data/forcings/` | Stage IV hourly rainfall for all 94 Des Plaines storms (`.nc` simulator input, `rain_source.npy` model input) |
@@ -94,7 +95,8 @@ torchrun --nproc_per_node=8 code/ldnet/ldnet_chicago_efficient.py --ddp --num-tr
 
 **Reproduce the paper's numbers** from the checkpoints once model-ready arrays exist: `scripts/rescore_checkpoints.py`
 (Illinois tables), `scripts/rescore_texas.py` (Texas), `scripts/score_train_vs_heldout.py` and `scripts/plot_fig7b.py` (Fig. 7b).
-The Texas FNO baseline has its own environment and instructions in `code/fno/README.md` (neuraloperator 1.0.2).
+The Texas baselines have their own instructions: `code/fno/README.md` (FNO; its own environment, neuraloperator 1.0.2)
+and `code/vae_convlstm/README.md` (VAE–ConvLSTM; scored with `scripts/score_vae_convlstm.py`).
 
 ## License
 
